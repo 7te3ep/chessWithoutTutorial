@@ -1,0 +1,8 @@
+#plateau {
+    height: 800px;
+    width: 800px;
+    border: 3px black solid;
+    background-image: url(./assets/plateau.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+}
