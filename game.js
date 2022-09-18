@@ -6,6 +6,7 @@ import {Fou} from "./modules/fou.js";
 import {Cheval} from "./modules/cheval.js";
 import {Queen} from "./modules/queen.js";
 import {Pion} from "./modules/pion.js";
+import {King} from "./modules/king.js";
 
 var whitePieces = []
 var blackPieces = []
@@ -18,11 +19,12 @@ function setGame(){
     whitePieces = [
         new Tower(true,false,0,0,"Tw0"),
         new Tower(true,false,7,0,"Tw1"),
-        new Fou(true,false,6,0,"Fw0"),
-        new Fou(true,false,1,0,"Fw1"),
-        new Cheval(true,false,2,0,"Cw0"),
-        new Cheval(true,false,5,0,"Cw1"),
+        new Fou(true,false,5,0,"Fw0"),
+        new Fou(true,false,2,0,"Fw1"),
+        new Cheval(true,false,1,0,"Cw0"),
+        new Cheval(true,false,6,0,"Cw1"),
         new Queen(true,false,4,0,"Qw"),
+        new King(true,false,3,0,"Dw")
     ]
     for (let i = 0;i<=7;i++){
         whitePieces.push(new Pion(true,false,i,1,"Pw"+i))
@@ -31,11 +33,12 @@ function setGame(){
     blackPieces = [
         new Tower(false,true,0,7,"Tb0"),
         new Tower(false,true,7,7,"Tb1"),
-        new Fou(false,true,6,7,"fb0"),
-        new Fou(false,true,1,7,"fb1"),
-        new Cheval(false,true,2,7,"Cb0"),
-        new Cheval(false,true,5,7,"Cb1"),
-        new Queen(false,true,3,7,"Qb")
+        new Fou(false,true,5,7,"fb0"),
+        new Fou(false,true,2,7,"fb1"),
+        new Cheval(false,true,1,7,"Cb0"),
+        new Cheval(false,true,6,7,"Cb1"),
+        new Queen(false,true,3,7,"Qb"),
+        new King(false,true,4,7,"Db")
     ]
     for (let i = 0;i<=7;i++){
         blackPieces.push(new Pion(false,true,i,6,"Pb"+i))
