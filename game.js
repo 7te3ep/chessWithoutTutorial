@@ -1,4 +1,4 @@
-
+// j'importe l'environement canvas et les classes des pieces
 
 import {c, ctx} from "./canvas.js";
 import {Tower} from "./modules/tower.js";
@@ -8,12 +8,15 @@ import {Queen} from "./modules/queen.js";
 import {Pion} from "./modules/pion.js";
 import {King} from "./modules/king.js";
 
+// je definis mes variables et arrays
 var whitePieces = []
 var blackPieces = []
 var allPieces =[]
 var caseClicked = ''
 var pieceSelected = 'none'
 var playerPlaying = "black"
+
+// fonction d'init
 
 function setGame(){
     whitePieces = [
@@ -45,16 +48,27 @@ function setGame(){
     }
 }
 
+// fonction qui draw une nouvelle frame
+
 function drawAndNextTurn(){
     // clear all
     ctx.clearRect(0, 0, c.width, c.height)
 
-    // check if
+    // white queen alive check
     var whiteHaveQueen = false
     for (let g = 0; g<whitePieces.length; g++) {
         if (whitePieces[g].id[0,0] == "Q"){
             whiteHaveQueen = true
         }
+    }
+    // black queen alive check
+    var blackHaveQueen = false
+    for (let g = 0; g<blackPieces.length; g++) {
+        if (blackPieces[g].id[0,0] == "Q"){
+            blackHaveQueen = true
+        }
+    }
+
     // draw all
     for (let i = 0; i<whitePieces.length; i++) {
         if (whitePieces[i].id[0,0] == "P" && whitePieces[i].case[1,2]=="7" && whiteHaveQueen == false){
@@ -65,11 +79,17 @@ function drawAndNextTurn(){
             whitePieces[i].draw()
         }
 
-    }
     for (let i = 0; i<blackPieces.length; i++) {
+        if (blackPieces[i].id[0,0] == "P" && blackPieces[i].case[1,2]=="0" && blackHaveQueen == false){
+            blackPieces.push(new Queen(true,false,blackPieces[i].case[0,0],0,"Qw"))
+            blackPieces.splice(i, 1)
+        }
         blackPieces[i].moove(blackPieces,whitePieces)
         blackPieces[i].draw()
     }
+
+    // change le joueur qui joue
+
     if (playerPlaying == "white"){
         playerPlaying = "black"
     }else{
@@ -81,11 +101,7 @@ function userPlay(){
     redirectAction(whitePieces,blackPieces,playerPlaying)
 }
 
-
-
-setGame()
-drawAndNextTurn()
-
+// redirige le deplacement et la select en fonction de la piece cliquer
 
 function redirectAction(whitePieces,blackPieces,playerPlaying){
     if (playerPlaying == "black"){
@@ -107,6 +123,8 @@ function redirectAction(whitePieces,blackPieces,playerPlaying){
     }
 }
 
+// fonction qui recupere l'id de la piece cliquer
+
 function selectBlackPiece(blackPieces,caseClicked){
     for (let i = 0;i<blackPieces.length;i++){
         if (blackPieces[i].case == caseClicked){
@@ -124,6 +142,8 @@ function selectWhitePiece(whitePieces,caseClicked){
         }
     }
 }
+
+// fonctions de deplacement des pieces
 
 function mooveBlackPieceSelected(blackPieces,caseClicked,pieceSelected){
     for (let i = 0;i<blackPieces.length;i++){
@@ -159,6 +179,8 @@ function mooveWhitePieceSelected(whitePieces,caseClicked,pieceSelected){
     }
 }
 
+// si deux piece se superpose, modifie le comportement
+
 function checkCollision(pieceColor,caseToCheck,whitePieces,blackPieces){
     for (let i = 0;i<blackPieces.length;i++){
         if (caseToCheck == blackPieces[i].case){
@@ -181,6 +203,7 @@ function checkCollision(pieceColor,caseToCheck,whitePieces,blackPieces){
     return true
 }
 
+// recupere le click dans le navigateur et les coordonnés dans le canvas
 function getCursorPosition(canvas, event) {
     const rect = canvas.getBoundingClientRect()
     var x = event.clientX - rect.left
@@ -195,3 +218,8 @@ const canvas = document.querySelector('canvas')
 canvas.addEventListener('mousedown', function(e) {
     getCursorPosition(canvas, e)
 })
+
+// lance le jeux
+
+setGame()
+drawAndNextTurn()

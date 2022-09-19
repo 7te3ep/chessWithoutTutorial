@@ -47,7 +47,6 @@ class King {
         ctx.font = "bold 20px arial";
         ctx.fillStyle = "blue";
         ctx.fillText(`K`, this.x*100+(25+30/2),this.y*100+55);
-
     }
 
 }
