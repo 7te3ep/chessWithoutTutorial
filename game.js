@@ -46,10 +46,25 @@ function setGame(){
 }
 
 function drawAndNextTurn(){
+    // clear all
     ctx.clearRect(0, 0, c.width, c.height)
+
+    // check if
+    var whiteHaveQueen = false
+    for (let g = 0; g<whitePieces.length; g++) {
+        if (whitePieces[g].id[0,0] == "Q"){
+            whiteHaveQueen = true
+        }
+    // draw all
     for (let i = 0; i<whitePieces.length; i++) {
-        whitePieces[i].moove(blackPieces,whitePieces)
-        whitePieces[i].draw()
+        if (whitePieces[i].id[0,0] == "P" && whitePieces[i].case[1,2]=="7" && whiteHaveQueen == false){
+                whitePieces.push(new Queen(true,false,whitePieces[i].case[0,0],7,"Qw"))
+                whitePieces.splice(i, 1)
+            }
+            whitePieces[i].moove(blackPieces,whitePieces)
+            whitePieces[i].draw()
+        }
+
     }
     for (let i = 0; i<blackPieces.length; i++) {
         blackPieces[i].moove(blackPieces,whitePieces)
