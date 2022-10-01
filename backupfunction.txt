@@ -1,0 +1,40 @@
+// echec checking
+
+function checkEchec(playerPlaying,blackPieces,whitePieces){
+    var kingPos = ""
+    // white playing
+    if (playerPlaying == "white"){
+        // find king pos
+        for (let i =0;i<whitePieces.length;i++){
+            if (whitePieces[i].id[0,0] == "K"){
+                kingPos = whitePieces[i].case
+            }
+        }
+        // check echec and if the test is saving
+        for (let i = 0; i<blackPieces.length;i++){
+            for (let g = 0; g<blackPieces[i].possibleMoove.length;g++){
+                if (blackPieces[i].possibleMoove[g]==kingPos){
+                    // echec
+                    return true
+                }
+            }
+        }
+    // black playing
+    }else {
+        // find king pos
+        for (let i =0;i<blackPieces.length;i++){
+            if (blackPieces[i].id[0,0] == "K"){
+                kingPos = blackPieces[i].case
+            }
+        }
+        // check echec and if the test is saving
+        for (let i = 0; i<whitePieces.length;i++){
+            for (let g = 0; g<whitePieces[i].possibleMoove.length;g++){
+                if (whitePieces[i].possibleMoove[g]==kingPos){
+                    return true
+                }
+            }
+        }
+    }
+    return false
+}

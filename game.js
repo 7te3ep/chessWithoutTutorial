@@ -7,11 +7,13 @@ import {Cheval} from "./modules/cheval.js";
 import {Queen} from "./modules/queen.js";
 import {Pion} from "./modules/pion.js";
 import {King} from "./modules/king.js";
+import { Shower } from "./modules/caseShower.js";
 
 // je definis mes variables et arrays
 var whitePieces = []
 var blackPieces = []
-var allPieces =[]
+var selectShower = ""
+var mooveShower =[]
 var caseClicked = ''
 var pieceSelected = 'none'
 var playerPlaying = "black"
@@ -27,7 +29,7 @@ function setGame(){
         new Cheval(true,false,1,0,"Cw0"),
         new Cheval(true,false,6,0,"Cw1"),
         new Queen(true,false,4,0,"Qw"),
-        new King(true,false,3,0,"Dw")
+        new King(true,false,3,0,"Kw")
     ]
     for (let i = 0;i<=7;i++){
         whitePieces.push(new Pion(true,false,i,1,"Pw"+i))
@@ -41,7 +43,7 @@ function setGame(){
         new Cheval(false,true,1,7,"Cb0"),
         new Cheval(false,true,6,7,"Cb1"),
         new Queen(false,true,3,7,"Qb"),
-        new King(false,true,4,7,"Db")
+        new King(false,true,4,7,"Kb")
     ]
     for (let i = 0;i<=7;i++){
         blackPieces.push(new Pion(false,true,i,6,"Pb"+i))
@@ -53,7 +55,6 @@ function setGame(){
 function drawAndNextTurn(){
     // clear all
     ctx.clearRect(0, 0, c.width, c.height)
-
     // white queen alive check
     var whiteHaveQueen = false
     for (let g = 0; g<whitePieces.length; g++) {
@@ -68,7 +69,6 @@ function drawAndNextTurn(){
             blackHaveQueen = true
         }
     }
-
     // draw all
     for (let i = 0; i<whitePieces.length; i++) {
         if (whitePieces[i].id[0,0] == "P" && whitePieces[i].case[1,2]=="7" && whiteHaveQueen == false){
@@ -81,7 +81,7 @@ function drawAndNextTurn(){
 
     for (let i = 0; i<blackPieces.length; i++) {
         if (blackPieces[i].id[0,0] == "P" && blackPieces[i].case[1,2]=="0" && blackHaveQueen == false){
-            blackPieces.push(new Queen(true,false,blackPieces[i].case[0,0],0,"Qw"))
+            blackPieces.push(new Queen(false,true,blackPieces[i].case[0,0],0,"Qw"))
             blackPieces.splice(i, 1)
         }
         blackPieces[i].moove(blackPieces,whitePieces)
@@ -89,7 +89,6 @@ function drawAndNextTurn(){
     }
 
     // change le joueur qui joue
-
     if (playerPlaying == "white"){
         playerPlaying = "black"
     }else{
@@ -98,7 +97,24 @@ function drawAndNextTurn(){
 }
 
 function userPlay(){
-    redirectAction(whitePieces,blackPieces,playerPlaying)
+    // check win
+    var anyPlayerWon = true
+    if(playerPlaying == "white"){
+        for (let i = 0; i<whitePieces.length;i++){
+            if (whitePieces[i].id[0,0]== "K"){
+                anyPlayerWon = false
+            }
+        }
+    }else {
+        for (let i = 0; i<blackPieces.length;i++){
+            if (blackPieces[i].id[0,0]== "K"){
+                anyPlayerWon = false
+            }
+        }
+    }
+    if (anyPlayerWon == false){
+        redirectAction(whitePieces,blackPieces,playerPlaying)
+    }
 }
 
 // redirige le deplacement et la select en fonction de la piece cliquer
@@ -107,19 +123,21 @@ function redirectAction(whitePieces,blackPieces,playerPlaying){
     if (playerPlaying == "black"){
         for (let i = 0;i<blackPieces.length;i++){
             if (blackPieces[i].case == caseClicked){
+                clearMooveShower(mooveShower)
                 selectBlackPiece(blackPieces,caseClicked,pieceSelected)
-            }else{
-                mooveBlackPieceSelected(blackPieces,caseClicked,pieceSelected)
+                return
             }
         }
+        mooveBlackPieceSelected(blackPieces,caseClicked,pieceSelected)
     }else{
         for (let i = 0;i<whitePieces.length;i++){
             if (whitePieces[i].case == caseClicked){
+                clearMooveShower(mooveShower)
                 selectWhitePiece(whitePieces,caseClicked,pieceSelected)
-            }else{
-                mooveWhitePieceSelected(whitePieces,caseClicked,pieceSelected)
+                return
             }
         }
+        mooveWhitePieceSelected(whitePieces,caseClicked,pieceSelected)
     }
 }
 
@@ -129,6 +147,11 @@ function selectBlackPiece(blackPieces,caseClicked){
     for (let i = 0;i<blackPieces.length;i++){
         if (blackPieces[i].case == caseClicked){
             pieceSelected = blackPieces[i].id
+
+            clearRedraw(selectShower,whitePieces,blackPieces)
+            selectShower = new Shower(caseClicked,true)
+            blackPieces[i].draw()
+            drawMooveShower(mooveShower,blackPieces[i])
             caseClicked = "none"
         }
     }
@@ -138,6 +161,11 @@ function selectWhitePiece(whitePieces,caseClicked){
     for (let i = 0;i<whitePieces.length;i++){
         if (whitePieces[i].case == caseClicked){
             pieceSelected = whitePieces[i].id
+
+            clearRedraw(selectShower,whitePieces,blackPieces)
+            selectShower = new Shower(caseClicked,true)
+            whitePieces[i].draw()
+            drawMooveShower(mooveShower,whitePieces[i])
             caseClicked = "none"
         }
     }
@@ -150,12 +178,12 @@ function mooveBlackPieceSelected(blackPieces,caseClicked,pieceSelected){
         if (blackPieces[i].id == pieceSelected){
             for (let g = 0;g<blackPieces[i].possibleMoove.length;g++){
                 if (caseClicked == blackPieces[i].possibleMoove[g] && checkCollision("black",blackPieces[i].possibleMoove[g],whitePieces,blackPieces)){
-                    blackPieces[i].x = caseClicked.substring(0,1)
-                    blackPieces[i].y = caseClicked.substring(2,3)
-                    blackPieces[i].case =`${blackPieces[i].x}.${blackPieces[i].y}`
-                    pieceSelected = "none"
-                    drawAndNextTurn()
-                    return
+                        blackPieces[i].x = caseClicked.substring(0,1)
+                        blackPieces[i].y = caseClicked.substring(2,3)
+                        blackPieces[i].case =`${blackPieces[i].x}.${blackPieces[i].y}`
+                        pieceSelected = "none"
+                        drawAndNextTurn()
+                        return
                 }
             }
         }
@@ -218,6 +246,72 @@ const canvas = document.querySelector('canvas')
 canvas.addEventListener('mousedown', function(e) {
     getCursorPosition(canvas, e)
 })
+
+
+
+
+function clearRedraw(selectShower,whitePieces,blackPieces){
+    ctx.clearRect(selectShower.x, selectShower.y,100,100)
+    for (let g = 0;g<whitePieces.length;g++){
+        if (selectShower.x/100+"."+selectShower.y/100 == whitePieces[g].case){
+            whitePieces[g].draw()
+        }
+    }
+    for (let g = 0;g<blackPieces.length;g++){
+        if (selectShower.x/100+"."+selectShower.y/100 == blackPieces[g].case){
+            blackPieces[g].draw()
+        }
+    }
+}
+
+function drawMooveShower(mooveShower,pieceSelected){
+    if (mooveShower.length == 0){
+        for (let i = 0;i<pieceSelected.possibleMoove.length;i++){
+            var test = true
+            if (playerPlaying == "white"){
+                for (let p = 0;p<whitePieces.length;p++){
+                    if (pieceSelected.possibleMoove[i] == whitePieces[p].case){
+                        test = false
+                    }
+                }
+            }else {
+                for (let p = 0;p<blackPieces.length;p++){
+                    if (pieceSelected.possibleMoove[i] == blackPieces[p].case){
+                        test = false
+                    }
+                }
+            }
+            if(test && pieceSelected.possibleMoove[i].length <=3){
+                mooveShower.push(new Shower(pieceSelected.possibleMoove[i],false))
+            }
+        }
+    }
+}
+
+
+function clearMooveShower(mooveShower){
+    mooveShower.splice(0,mooveShower.length)
+    ctx.clearRect(0, 0, c.width, c.height)
+
+    // draw all
+    for (let i = 0; i<whitePieces.length; i++) {
+        if (whitePieces[i].id[0,0] == "P" && whitePieces[i].case[1,2]=="7" && whiteHaveQueen == false){
+                whitePieces.push(new Queen(true,false,whitePieces[i].case[0,0],7,"Qw"))
+                whitePieces.splice(i, 1)
+            }
+            whitePieces[i].moove(blackPieces,whitePieces)
+            whitePieces[i].draw()
+        }
+
+    for (let i = 0; i<blackPieces.length; i++) {
+        if (blackPieces[i].id[0,0] == "P" && blackPieces[i].case[1,2]=="0" && blackHaveQueen == false){
+            blackPieces.push(new Queen(false,true,blackPieces[i].case[0,0],0,"Qw"))
+            blackPieces.splice(i, 1)
+        }
+        blackPieces[i].moove(blackPieces,whitePieces)
+        blackPieces[i].draw()
+    }
+}
 
 // lance le jeux
 

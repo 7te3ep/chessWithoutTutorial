@@ -10,10 +10,12 @@ class Queen {
         this.colonnes = 8
         this.x = x
         this.y = y
-        this.width = 30
+        this.width = 50
         this.height = 50
         this.possibleMoove = []
         this.case = `${this.x}.${this.y}`
+        this.img = new Image();
+        this.img.src = "/assets/white/tower.png";
     }
 
     moove(whitePieces,blackPieces){
@@ -25,7 +27,7 @@ class Queen {
         var stop = false
         // add on right axis
         for (let i = 0; i<8; i++) {
-            if (i != this.x && stop == false) {
+            if ((this.x+i)+"."+this.y != this.case && stop == false) {
                 stop = checkStop(allPieces,(this.x+i)+"."+this.y,stop,this.x,this.y)
                 this.possibleMoove.push((this.x+i)+"."+this.y)
             }
@@ -35,7 +37,7 @@ class Queen {
         stop = false
 
         for (let i = 0; i<8; i++) {
-            if (i != this.x && stop == false) {
+            if ((this.x-i)+"."+this.y != this.case && stop == false) {
                 stop = checkStop(allPieces,(this.x-i)+"."+this.y,stop,this.x,this.y)
                 this.possibleMoove.push((this.x-i)+"."+this.y)
             }
@@ -44,7 +46,7 @@ class Queen {
         stop = false
 
         for (let i = 0; i<8;i++) {
-            if (i != this.y && stop == false) {
+            if (this.x+"."+(this.y+i) != this.case && stop == false) {
                 stop = checkStop(allPieces,this.x+"."+(this.y+i),stop,this.x,this.y)
                 this.possibleMoove.push(this.x+"."+(this.y+i))
             }
@@ -53,7 +55,7 @@ class Queen {
         stop = false
 
         for (let i = 0; i<8;i++) {
-            if (i != this.y && stop == false) {
+            if (this.x+"."+(this.y-i) != this.case && stop == false) {
                 stop = checkStop(allPieces,this.x+"."+(this.y-i),stop,this.x,this.y)
                 this.possibleMoove.push(this.x+"."+(this.y-i))
             }
@@ -111,17 +113,29 @@ class Queen {
     }
 // il faut modifier pour ajouter des moove en partant de la piece d'echec
     draw() {
+        var img = this.img
         if (this.white == true){
-            ctx.fillStyle = 'lightGrey';
+            this.img.src = "/assets/white/queen.png";
         }
         else {
-            ctx.fillStyle = 'black';
+            this.img.src = "/assets/black/queen.png";
         }
-        ctx.fillRect(this.x*100+(25+30/2-5),this.y*100+25, this.width,this.height);
-        ctx.font = "bold 20px arial";
-        ctx.fillStyle = "blue";
-        ctx.fillText(`Q`, this.x*100+(25+30/2),this.y*100+55);
-
+        this.img.addEventListener("load", (e) => {
+              ctx.drawImage(
+              img,
+              this.x*100+(25),
+              this.y*100+25,
+              this.width,
+              this.height
+            );
+        })
+        ctx.drawImage(
+        img,
+        this.x*100+(25),
+        this.y*100+25,
+        this.width,
+        this.height
+        );
     }
 
 }
@@ -136,6 +150,7 @@ function checkStop(allPieces,toCheck,stop,x,y){
     stop = false
     return stop
 }
+
 
 
 export {Queen};
